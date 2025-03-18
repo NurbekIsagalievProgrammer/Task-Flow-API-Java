@@ -29,42 +29,75 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        
-        // Добавляем отладочный вывод
-        System.out.println("Auth header: " + authHeader);
-        
-        final String jwt;
-        final String userEmail;
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("No valid auth header found");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
-        
-        System.out.println("Extracted email: " + userEmail);
-        
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+        try {
+            final String authHeader = request.getHeader("Authorization");
+            System.out.println("Request URL: " + request.getRequestURL());
+            System.out.println("Auth header: " + authHeader);
             
-            System.out.println("User authorities: " + userDetails.getAuthorities());
-            
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-                
-                System.out.println("Authentication set in SecurityContext");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                System.out.println("No valid auth header found");
+                filterChain.doFilter(request, response);
+                return;
             }
+
+            final String jwt = authHeader.substring(7);
+            System.out.println("JWT token: " + jwt);
+            
+            final String userEmail = jwtService.extractUsername(jwt);
+            System.out.println("User email from token: " + userEmail);
+            
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println("Authentication set in context");
+                }
+            }
+            
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            System.out.println("Error in JWT filter: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
-        filterChain.doFilter(request, response);
     }
-} 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

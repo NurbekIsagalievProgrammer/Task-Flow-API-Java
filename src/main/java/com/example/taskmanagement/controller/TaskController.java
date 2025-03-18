@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/tasks")
 @RequiredArgsConstructor
 @Tag(name = "Tasks", description = "Task management API")
-@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "Bearer Authentication")
 public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create new task")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TaskResponse> createTask(@RequestBody @Valid TaskRequest request) {
         return ResponseEntity.ok(taskService.createTask(request));
     }
@@ -61,8 +61,8 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete task")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete task")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();

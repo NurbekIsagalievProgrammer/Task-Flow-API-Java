@@ -1,10 +1,11 @@
 com/example/taskmanagement/config/TestSecurityConfig.class
 com/example/taskmanagement/service/TaskServiceTest.class
-com/example/taskmanagement/controller/TaskControllerTest.class
 com/example/taskmanagement/config/TestConfig.class
-com/example/taskmanagement/security/MockJwtService$1.class
 com/example/taskmanagement/config/TestJwtConfig$1.class
 com/example/taskmanagement/security/MockJwtService.class
-com/example/taskmanagement/mapper/TestTaskMapper.class
 com/example/taskmanagement/config/SecurityTestConfig.class
 com/example/taskmanagement/config/TestJwtConfig.class
+com/example/taskmanagement/controller/ApiControllerTest.class
+com/example/taskmanagement/security/MockJwtService$1.class
+com/example/taskmanagement/mapper/TestTaskMapper.class
+com/example/taskmanagement/util/PasswordEncoderTest.class

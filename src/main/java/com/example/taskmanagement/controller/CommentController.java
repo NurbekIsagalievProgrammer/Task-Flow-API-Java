@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/tasks/{taskId}/comments")
 @RequiredArgsConstructor
-@Tag(name = "Comments", description = "Comment management API")
-@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "Bearer Authentication")
+@Tag(name = "Comments", description = "Task comments API")
 public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    @Operation(summary = "Create new comment")
-    public ResponseEntity<CommentResponse> createComment(
+    @Operation(summary = "Add comment to task")
+    public ResponseEntity<CommentResponse> addComment(
             @PathVariable Long taskId,
             @RequestBody @Valid CommentRequest request
     ) {
@@ -32,7 +32,7 @@ public class CommentController {
 
     @GetMapping
     @Operation(summary = "Get task comments")
-    public ResponseEntity<Page<CommentResponse>> getTaskComments(
+    public ResponseEntity<Page<CommentResponse>> getComments(
             @PathVariable Long taskId,
             Pageable pageable
     ) {

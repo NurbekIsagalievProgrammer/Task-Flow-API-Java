@@ -120,7 +120,20 @@ public class TaskService {
     }
 
     private User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Auth: " + auth);
+        System.out.println("Principal type: " + auth.getPrincipal().getClass());
+        System.out.println("Principal: " + auth.getPrincipal());
+        System.out.println("Authorities: " + auth.getAuthorities());
+        
+        if (auth.getPrincipal() instanceof User) {
+            return (User) auth.getPrincipal();
+        } else if (auth.getPrincipal() instanceof UserDetails userDetails) {
+            return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        }
+        
+        throw new AccessDeniedException("Invalid authentication");
     }
 
     public boolean isAssignee(Long taskId, UserDetails userDetails) {

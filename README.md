@@ -8,178 +8,44 @@ REST API сервис для управления задачами и коман
 - Spring Boot 3.2
 - Spring Security + JWT
 - PostgreSQL
-- Swagger/OpenAPI
 - Docker
 
-## Запуск проекта
+## Быстрый старт
 
-1. Убедитесь, что у вас установлены:
-   - Java 17
-   - Maven
-   - Docker и Docker Compose
-
-2. Клонируйте репозиторий:
-   ```bash
-   git clone <repository-url>
-   cd task-management-system
-   ```
-
-3. Запустите базу данных:
-   ```bash
-   docker-compose up -d
-   ```
-
-4. Запустите приложение:
-   ```bash
-   mvn spring-boot:run
-   ```
-
-5. Запуск тестов:
-   ```bash
-   mvn test
-   ```
-
-6. Приложение будет доступно по адресу: http://localhost:8080
-   Swagger UI: http://localhost:8080/swagger-ui.html
-
-## API Endpoints
-
-### Аутентификация
-- POST /api/v1/auth/register - Регистрация нового пользователя
-- POST /api/v1/auth/authenticate - Аутентификация пользователя
-- PUT /api/v1/auth/users/{id}/make-admin - Повышение пользователя до админа (только админ)
-
-### Задачи
-- POST /api/v1/tasks - Создание новой задачи (только админ)
-- GET /api/v1/tasks - Получение списка задач
-- GET /api/v1/tasks/{id} - Получение задачи по ID
-- PUT /api/v1/tasks/{id} - Обновление задачи (только админ)
-- PATCH /api/v1/tasks/{id}/status - Обновление статуса задачи
-- DELETE /api/v1/tasks/{id} - Удаление задачи (только админ)
-
-### Комментарии
-- POST /api/v1/tasks/{taskId}/comments - Добавление комментария к задаче
-- GET /api/v1/tasks/{taskId}/comments - Получение комментариев задачи
-
-## Роли и права доступа
-
-### Администратор
-- Создание новых задач
-- Редактирование всех задач
-- Назначение исполнителей
-- Удаление задач
-- Управление статусами и приоритетами
-- Добавление комментариев
-- Повышение пользователей до админа
-
-### Пользователь
-- Просмотр назначенных задач
-- Обновление статуса назначенных задач
-- Добавление комментариев к назначенным задачам
-
-## Примеры запросов
-
-### Регистрация
-```json
-POST /api/v1/auth/register
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john@example.com",
-  "password": "password123"
-}
+1. Запустите базу данных:
+```bash
+docker-compose up -d
 ```
 
-### Аутентификация
+2. Подключитесь к PostgreSQL и создайте первого администратора:
+```sql
+-- Включаем расширение для хеширования
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Создаем администратора (пароль: admin123)
+INSERT INTO users (email, first_name, last_name, password, role)
+VALUES (
+    'admin@example.com',
+    'Admin',
+    'User',
+    crypt('admin123', gen_salt('bf')),
+    'ADMIN'
+);
+```
+
+3. Запустите приложение:
+```bash
+mvn spring-boot:run
+```
+
+4. Войдите в систему через Swagger UI (http://localhost:8080/swagger-ui/index.html#/):
 ```json
 POST /api/v1/auth/authenticate
 {
-  "email": "john@example.com",
-  "password": "password123"
+  "email": "admin@example.com",
+  "password": "admin123"
 }
 ```
-
-### Создание задачи (админ)
-```json
-POST /api/v1/tasks
-{
-  "title": "Новая задача",
-  "description": "Описание задачи",
-  "priority": "HIGH",
-  "assigneeId": 2
-}
-```
-
-### Обновление статуса
-```json
-PATCH /api/v1/tasks/{id}/status?status=IN_PROGRESS
-```
-
-## Безопасность
-Все защищенные endpoints требуют JWT токен в заголовке:
-```
-Authorization: Bearer your_jwt_token
-```
-
-## Первоначальная настройка
-
-### Подключение к базе данных
-
-1. После запуска Docker контейнера с PostgreSQL:
-   ```bash
-   docker-compose up -d
-   ```
-
-2. Подключение к PostgreSQL через командную строку:
-   ```bash
-   # Подключение к контейнеру
-   docker exec -it testjava_postgres_1 bash
-
-   # Внутри контейнера подключаемся к БД
-   psql -U postgres -d task_management
-   ```
-
-   Или одной командой:
-   ```bash
-   docker exec -it testjava_postgres_1 psql -U postgres -d task_management
-   ```
-
-3. Полезные команды в psql:
-   ```sql
-   -- Показать все таблицы
-   \dt
-
-   -- Показать структуру таблицы users
-   \d users
-   
-   -- Выйти из psql
-   \q
-   ```
-
-### Создание первого администратора
-
-1. После подключения к БД выполните SQL-запрос:
-   ```sql
-   INSERT INTO users (email, password, first_name, last_name, role)
-   VALUES (
-       'admin@example.com',
-       '$2a$10$vYQNGG0kI2vG1.U8qX1WqOEPm6r3o3.oqgDxqUh.TZhJGrqgHxKi2', -- пароль: admin123
-       'Admin',
-       'User',
-       'ADMIN'
-   );
-   ```
-
-2. Проверьте что админ создан:
-   ```sql
-   SELECT * FROM users;
-   ```
-
-3. После этого можно войти через API с учетными данными:
-   - Email: admin@example.com
-   - Password: admin123
-
-Этот администратор сможет создавать задачи и назначать других администраторов через API.
 
 ## Ключевые возможности
 
@@ -188,4 +54,163 @@ Authorization: Bearer your_jwt_token
 - Комментирование задач
 - Ролевая модель (администраторы и пользователи)
 - JWT аутентификация
-- Документированное API (Swagger) 
+- Документированное API (Swagger)
+
+## Права доступа
+
+### Администратор
+- Создание, редактирование и удаление любых задач
+- Назначение исполнителей
+- Изменение статусов и приоритетов
+- Управление пользователями
+- Комментирование задач
+
+### Пользователь
+- Просмотр назначенных задач
+- Изменение статуса своих задач
+- Комментирование назначенных задач
+
+## API Endpoints
+
+### Аутентификация
+- POST /api/v1/auth/register - Регистрация нового пользователя
+- POST /api/v1/auth/authenticate - Вход в систему
+
+### Задачи
+
+#### Получение списка задач
+```json
+GET /api/v1/tasks
+
+// Параметры пагинации в теле запроса:
+{
+  "page": 0,        // номер страницы (начиная с 0)
+  "size": 10,       // количество задач на странице
+  "sort": ["priority,desc"]  // сортировка по полю
+}
+
+// Возможные поля для сортировки:
+// - id,desc/asc
+// - title,desc/asc
+// - priority,desc/asc
+// - status,desc/asc
+// - createdAt,desc/asc
+```
+
+#### Создание задачи
+```json
+POST /api/v1/tasks
+{
+  "title": "Название задачи",
+  "description": "Описание задачи",
+  "priority": "HIGH",  // LOW, MEDIUM, HIGH
+  "assigneeId": 1      // ID существующего пользователя
+}
+```
+
+#### Обновление задачи
+```json
+PUT /api/v1/tasks/{id}
+{
+  "title": "Обновленное название",
+  "description": "Обновленное описание",
+  "priority": "HIGH",     // LOW, MEDIUM, HIGH
+  "assigneeId": 1         // ID существующего пользователя
+}
+```
+
+#### Обновление статуса
+```
+PATCH /api/v1/tasks/{id}/status?status=IN_PROGRESS
+// Статусы: PENDING, IN_PROGRESS, COMPLETED
+```
+
+#### Удаление задачи
+```
+DELETE /api/v1/tasks/{id}
+
+// Успешный ответ: 204 No Content
+// Возможные ошибки:
+// - 404 Not Found (если задача не найдена)
+// - 403 Forbidden (если нет прав на удаление)
+```
+
+### Комментарии
+
+#### Получение комментариев к задаче
+```json
+GET /api/v1/tasks/{taskId}/comments
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Возможные поля для сортировки:
+// - id,desc/asc
+// - content,desc/asc
+// - createdAt,desc/asc
+```
+
+#### Добавление комментария
+```json
+POST /api/v1/tasks/{taskId}/comments
+{
+  "content": "Текст комментария"
+}
+```
+
+#### Повышение пользователя до администратора
+```
+PUT /api/v1/auth/users/{id}/make-admin
+
+// id - это ID пользователя, которого нужно сделать администратором
+// Например: /api/v1/auth/users/7/make-admin сделает пользователя с ID=7 администратором
+
+// Требуется токен администратора в заголовке:
+Authorization: <jwt_token>
+
+// Успешный ответ: 200 OK
+// Возможные ошибки:
+// - 404 Not Found (если пользователь не найден)
+// - 403 Forbidden (если нет прав администратора)
+// - 401 Unauthorized (если не передан токен)
+``` 

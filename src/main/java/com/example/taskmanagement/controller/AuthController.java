@@ -5,6 +5,7 @@ import com.example.taskmanagement.dto.auth.AuthenticationResponse;
 import com.example.taskmanagement.dto.auth.RegisterRequest;
 import com.example.taskmanagement.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +38,31 @@ public class AuthController {
 
     @PutMapping("/users/{id}/make-admin")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Make user an admin")
+    @Operation(
+        summary = "Make user an admin",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
     public ResponseEntity<Void> makeAdmin(@PathVariable Long id) {
         authService.makeAdmin(id);
         return ResponseEntity.ok().build();
     }
-} 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

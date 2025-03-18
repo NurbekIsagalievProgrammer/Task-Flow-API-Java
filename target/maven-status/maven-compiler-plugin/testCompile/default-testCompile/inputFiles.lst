@@ -1,8 +1,9 @@
 /home/nurbek/TestJava/src/test/java/com/example/taskmanagement/config/TestJwtConfig.java
 /home/nurbek/TestJava/src/test/java/com/example/taskmanagement/config/SecurityTestConfig.java
 /home/nurbek/TestJava/src/test/java/com/example/taskmanagement/security/MockJwtService.java
-/home/nurbek/TestJava/src/test/java/com/example/taskmanagement/controller/TaskControllerTest.java
 /home/nurbek/TestJava/src/test/java/com/example/taskmanagement/config/TestSecurityConfig.java
+/home/nurbek/TestJava/src/test/java/com/example/taskmanagement/util/PasswordEncoderTest.java
 /home/nurbek/TestJava/src/test/java/com/example/taskmanagement/mapper/TestTaskMapper.java
+/home/nurbek/TestJava/src/test/java/com/example/taskmanagement/controller/ApiControllerTest.java
 /home/nurbek/TestJava/src/test/java/com/example/taskmanagement/config/TestConfig.java
 /home/nurbek/TestJava/src/test/java/com/example/taskmanagement/service/TaskServiceTest.java

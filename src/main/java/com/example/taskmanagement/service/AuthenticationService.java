@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,26 +49,68 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        var token = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(token)
-                .build();
+        try {
+            System.out.println("Raw password from request: " + request.getPassword());
+            var user = userRepository.findByEmail(request.getEmail());
+            if (user.isPresent()) {
+                System.out.println("Stored password hash: " + user.get().getPassword());
+                System.out.println("Attempting to match passwords...");
+            }
+            
+            // Проверяем существование пользователя
+            System.out.println("User found in DB: " + (user.isPresent() ? "yes" : "no"));
+            
+            if (user.isPresent()) {
+                System.out.println("User role: " + user.get().getRole());
+                System.out.println("Password length: " + user.get().getPassword().length());
+            }
+            
+            // Пытаемся аутентифицировать
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+            
+            System.out.println("Authentication successful");
+            
+            var token = jwtService.generateToken(user.orElseThrow());
+            return AuthenticationResponse.builder()
+                    .token(token)
+                    .build();
+            
+        } catch (Exception e) {
+            System.out.println("Authentication error: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void makeAdmin(Long userId) {
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        user.setRole(Role.ADMIN);
-        userRepository.save(user);
+        try {
+            System.out.println("Attempting to make user " + userId + " an admin");
+            System.out.println("Current authentication principal: " + 
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            System.out.println("Current authentication authorities: " + 
+                SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+            
+            var userExists = userRepository.existsById(userId);
+            System.out.println("User exists: " + userExists);
+            
+            var user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+            
+            System.out.println("Found user: " + user.getEmail() + ", current role: " + user.getRole());
+            user.setRole(Role.ADMIN);
+            userRepository.save(user);
+            System.out.println("Successfully made user an admin");
+        } catch (Exception e) {
+            System.out.println("Error in makeAdmin: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 } 

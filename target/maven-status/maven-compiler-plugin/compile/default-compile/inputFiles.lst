@@ -8,6 +8,7 @@
 /home/nurbek/TestJava/src/main/java/com/example/taskmanagement/repository/UserRepository.java
 /home/nurbek/TestJava/src/main/java/com/example/taskmanagement/security/JwtAuthenticationFilter.java
 /home/nurbek/TestJava/src/main/java/com/example/taskmanagement/model/TaskPriority.java
+/home/nurbek/TestJava/src/main/java/com/example/taskmanagement/util/PasswordGenerator.java
 /home/nurbek/TestJava/src/main/java/com/example/taskmanagement/dto/comment/CommentResponse.java
 /home/nurbek/TestJava/src/main/java/com/example/taskmanagement/model/Task.java
 /home/nurbek/TestJava/src/main/java/com/example/taskmanagement/dto/task/TaskResponse.java

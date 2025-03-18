@@ -20,6 +20,7 @@ com/example/taskmanagement/dto/comment/CommentRequest.class
 com/example/taskmanagement/model/Priority.class
 com/example/taskmanagement/repository/TaskRepository.class
 com/example/taskmanagement/TaskManagementApplication.class
+com/example/taskmanagement/util/PasswordGenerator.class
 com/example/taskmanagement/model/Task$TaskBuilder.class
 com/example/taskmanagement/config/SecurityConfig.class
 com/example/taskmanagement/service/AuthenticationService.class
