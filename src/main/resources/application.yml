@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/task_management
+    url: jdbc:postgresql://postgres:5432/taskdb
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver

@@ -1,54 +1,34 @@
-# Task Flow API
+# Task Management API
 
-REST API сервис для управления задачами и командной работы. Позволяет организовать процесс распределения и выполнения задач между сотрудниками с разграничением прав доступа.
+## Запуск приложения
+
+Для запуска приложения выполните команду:
+```bash
+docker-compose up
+```
+
+После запуска приложения REST API будет доступно на порту 8080. Для взаимодействия с API используйте:
+
+- Swagger UI (рекомендуется): http://localhost:8080/swagger-ui/index.html 
+  > Интерактивная документация, где можно просматривать и тестировать все доступные endpoints
+
+- OpenAPI спецификация: http://localhost:8080/v3/api-docs
+  > Полная спецификация API в формате JSON для интеграции с другими инструментами
+
+**Примечание:** Прямой переход по адресу http://localhost:8080 не предусмотрен, так как это REST API сервис. Используйте Swagger UI для изучения и тестирования API endpoints.
+
+Для первого входа используйте учетные данные администратора:
+- Email: admin@example.com
+- Password: admin123
 
 ## Технологии
-
 - Java 17
 - Spring Boot 3.2
-- Spring Security + JWT
 - PostgreSQL
 - Docker
-
-## Быстрый старт
-
-1. Запустите базу данных:
-```bash
-docker-compose up -d
-```
-
-2. Подключитесь к PostgreSQL и создайте первого администратора:
-```sql
--- Включаем расширение для хеширования
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
--- Создаем администратора (пароль: admin123)
-INSERT INTO users (email, first_name, last_name, password, role)
-VALUES (
-    'admin@example.com',
-    'Admin',
-    'User',
-    crypt('admin123', gen_salt('bf')),
-    'ADMIN'
-);
-```
-
-3. Запустите приложение:
-```bash
-mvn spring-boot:run
-```
-
-4. Войдите в систему через Swagger UI (http://localhost:8080/swagger-ui/index.html#/):
-```json
-POST /api/v1/auth/authenticate
-{
-  "email": "admin@example.com",
-  "password": "admin123"
-}
-```
+- Swagger/OpenAPI 3
 
 ## Ключевые возможности
-
 - Управление задачами (создание, редактирование, удаление)
 - Система приоритетов и статусов
 - Комментирование задач
